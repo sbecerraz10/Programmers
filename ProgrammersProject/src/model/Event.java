@@ -8,9 +8,13 @@ import java.io.IOException;
 
 public class Event {
 
+	public static final long PROGRAMMERS_SIZE = 1000;
+	
 	private Programmer root;
 	
 	private Participant head;
+	
+	private Programmer rootByPos;
 	
 	private File file;
 	
@@ -39,7 +43,6 @@ public class Event {
 	public void loadProgrammers() {
 		
 
-        //String csvFile = "archivo.csv";
         BufferedReader br = null;
         String line = "";
         String cvsSplitBy = ",";
@@ -48,9 +51,11 @@ public class Event {
         	if(file!=null)
             br = new BufferedReader(new FileReader(file));
         	line = br.readLine();
-            while ((line = br.readLine()) != null) {
+            int k = 0;
+        	while ((line = br.readLine()) != null) {
 
-                // use comma as separator
+            	
+            	// use comma as separator
                 String[] data = line.split(cvsSplitBy);
                 String id = data[0];
                 String first_name = data[1];
@@ -59,11 +64,27 @@ public class Event {
                 String gender = data[4];
                 String avatar = data[5];
                 
-                Programmer programmer = new Programmer(id, first_name, last_name, email, gender, avatar);
+                
+                
+                
+                
+                
+                Programmer programmer = new Programmer(id, first_name, last_name, email, gender, avatar,k);
+                Programmer programmer1 = new Programmer(id, first_name, last_name, email, gender, avatar,k);
                 createTree(programmer, this.root, null,false,false);
+                k++;               
+                saveByPos(programmer1, this.rootByPos);
+                
             }
           selectParticipants(0);
-
+          System.out.println(""+sizePart);
+          Participant participant = head;
+          int contador = 1;
+			while(participant!=null) {
+				System.out.println(""+contador +" "+participant.getId());
+				participant = participant.getNext();
+				contador++;
+			}
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -81,6 +102,35 @@ public class Event {
 		
 		
 		
+	}
+	
+	
+	public void saveByPos(Programmer programmer, Programmer root) {
+		if(rootByPos==null) {
+			rootByPos = programmer;
+		}else {
+			if(programmer!=null) {
+				programmer.setRight(rootByPos);
+				rootByPos = programmer;
+			}
+		}
+	}
+	
+	public void saveParticipants(int number, int times, Participant participant) {
+		if(this.sizePart < PROGRAMMERS_SIZE ) {
+			if(number==1) {
+				if(head==null) {
+					head = participant;
+					this.sizePart++;
+					System.out.println(participant.getId());
+				}else {
+					participant.setNext(head);
+					head = participant;
+					this.sizePart++;
+					System.out.println(participant.getId());
+				}
+			}
+		}
 	}
 	
 	
@@ -143,15 +193,16 @@ public class Event {
 		
 	}
 	
-	public Programmer inOrden(Programmer root, int pos, int actualpos) {
+
+	
+	public Programmer inOrden(Programmer root, int pos) {
 		Programmer temp = null;
 		if(root!=null) {
-			if(actualpos!=pos) {
-				actualpos++;
-				temp = inOrden(root.getLeft(),pos,actualpos);
-				temp = inOrden(root.getRight(),pos,actualpos);
-			}else {
+			if(root.getIndex()==pos) {
 				temp = root;
+			}else {
+				root = root.getRight();
+				temp = inOrden(root,pos);
 			}
 		}
 		return temp;
@@ -159,13 +210,15 @@ public class Event {
 	
 	
 	public void selectParticipants(int sizePart) {
-		int sizeProgra = countProgrammers(root);
+		int sizeProgra = (int)PROGRAMMERS_SIZE;
 		if(sizePart<(sizeProgra/2)) {
-			int randomPos = (int)(Math.random() * sizeProgra/100) + 1;
-			Programmer tempPro = inOrden(root,randomPos,0);
-			Participant temp = new Participant(tempPro.getId(),tempPro.getFirst_name(),tempPro.getLast_name(),tempPro.getEmail(),tempPro.getGender(),tempPro.getAvatar());
-			loadParticipants(temp);
-			selectParticipants(this.sizePart);
+			int randomPos = (int)(Math.random() * sizeProgra-7) + 1;
+			Programmer tempPro = inOrden(this.rootByPos,randomPos);
+			if(tempPro!=null) {
+				Participant temp = new Participant(tempPro.getId(),tempPro.getFirst_name(),tempPro.getLast_name(),tempPro.getEmail(),tempPro.getGender(),tempPro.getAvatar(),-1);
+				loadParticipants(temp);
+				selectParticipants(this.sizePart);
+			}
 		}
 		
 	}

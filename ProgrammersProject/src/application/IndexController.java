@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.FileChooser;
+import model.Participant;
 import model.Programmer;
 
 public class IndexController {
@@ -70,6 +71,7 @@ public class IndexController {
 		clickedSearchFile();
 		loadProgrammers(); 
 		searchProgrammer();
+		searchParticipant();
 	}
 	
 	
@@ -92,14 +94,14 @@ public class IndexController {
 				if(file!=null)
 				Main.getEvent().setFile(file);
 				Main.getEvent().loadProgrammers();
+				lbLoad.setText("Programmers loaded");
 			}
 			catch(NullPointerException e) {
-//				Alert alert = new Alert(AlertType.ERROR);
-//				alert.setTitle("Numbers");
-//				alert.setHeaderText("Exception");
-//				alert.setContentText("Please insert numbers");
-//				alert.showAndWait();
-				e.printStackTrace();
+				Alert alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Numbers");
+				alert.setHeaderText("Exception");
+				alert.setContentText("Please insert numbers");
+				alert.showAndWait();
 			}	
 		});
 	}
@@ -128,6 +130,37 @@ public class IndexController {
 					alert.setTitle("Not Found");
 					alert.setHeaderText("Exception");
 					alert.setContentText("Programmer not found");
+					alert.showAndWait();
+				}				
+			}
+		});
+	}
+	
+	
+	public void searchParticipant() {
+		btsearchPar.setOnMouseClicked((MouseEvent)->{
+			if(tfSearchPar.getText()!="") {
+				
+				try {
+					Participant participant = Main.getEvent().searchParticipant(tfSearchPar.getText(),Main.getEvent().getHead());
+					lbName.setText("Name:  " + participant.getFirst_name());
+					lbLastname.setText("Lastname:  " + participant.getLast_name());
+					lbEmail.setText("Email: " + participant.getEmail());
+					lbID.setText("ID: " + participant.getId());
+					lbGender.setText("Gender: " + participant.getGender());
+					lbTimeFindPro.setText(""+ Main.getEvent().getTimeParticipant() +" ms");
+
+				}catch(NumberFormatException e){
+					Alert alert = new Alert(AlertType.ERROR);
+					alert.setTitle("Numbers");
+					alert.setHeaderText("Exception");
+					alert.setContentText("Please insert numbers");
+					alert.showAndWait();
+				}catch(NullPointerException e) {
+					Alert alert = new Alert(AlertType.INFORMATION);
+					alert.setTitle("Not Found");
+					alert.setHeaderText("Exception");
+					alert.setContentText("Participant not found");
 					alert.showAndWait();
 				}				
 			}

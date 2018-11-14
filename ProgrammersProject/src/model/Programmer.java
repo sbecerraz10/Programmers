@@ -12,8 +12,9 @@ public class Programmer implements Comparable<Programmer>{
 	private Programmer left;
 	private Programmer right;
 	
+	private int index;
 	
-	public Programmer(String id, String first_name, String last_name, String email, String gender, String avatar) {
+	public Programmer(String id, String first_name, String last_name, String email, String gender, String avatar, int index) {
 		super();
 		this.id = id;
 		this.first_name = first_name;
@@ -21,6 +22,17 @@ public class Programmer implements Comparable<Programmer>{
 		this.email = email;
 		this.gender = gender;
 		this.avatar = avatar;
+		this.index = index;
+	}
+
+
+	public int getIndex() {
+		return index;
+	}
+
+
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 
